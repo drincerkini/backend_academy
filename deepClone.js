@@ -3,14 +3,10 @@ const deepClone = (obj) => {
     return obj;
   }
 
-  if (Array.isArray(obj)) {
-    return obj.map((element) => deepClone(element));
-  }
-
   const clonedObj = {};
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
-      clonedObj[key] = deepClone(obj[key]);
+      clonedObj[key] = obj[key];
     }
   }
 
@@ -21,10 +17,14 @@ const deepClone = (obj) => {
 const originalObject = {
   a: 1,
   b: 3,
-  d: 3,
+  c: 3,
 };
 
 const clonedObject = deepClone(originalObject);
 
+console.log('original object: ');
+console.log(originalObject);
+
+console.log('Cloned object: ');
 console.log(clonedObject);
-console.log(originalObject === clonedObject);
+console.log('Is original object and cloned object equal: ' + (originalObject === clonedObject));
