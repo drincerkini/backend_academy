@@ -1,4 +1,3 @@
-const x = 3;
-const y = 4;
+const hello = 'Hello World';
 
-console.log(x, y);
+console.log(hello);
