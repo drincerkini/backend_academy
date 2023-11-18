@@ -6,6 +6,11 @@ const PORT = 3000;
 
 // middlewares
 app.use(express.json());
+// midleware for loging each recived request
+app.use((req, res, next) => {
+    console.log(`Recived new request: ${req.method} ${req.url}`);
+    next();
+})
 
 // Main Endpoint
 app.get("/", (req, res) => {
