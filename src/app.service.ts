@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
 const users: UserDto[] = [
   {
@@ -35,8 +36,33 @@ export class AppService {
     return foundUser;
   }
 
-  getUsers(email: string) {
-    const usersByEmail = users.filter((user) => user.email === email);
-    return usersByEmail;
+  getUsers() {
+    return users;
+  }
+  // getUsers(email: string) {
+  //   const usersByEmail = users.filter((user) => user.email === email);
+  //   return usersByEmail;
+  // }
+
+  updateUser(id: number, updateUserDto: UpdateUserDto) {
+    const userToUpdate = users.find((user) => user.id === id);
+
+    if (!userToUpdate) {
+      throw new NotFoundException('User not found!');
+    }
+
+    Object.assign(userToUpdate, updateUserDto);
+    return updateUserDto;
+  }
+
+  deleteUser(id: number) {
+    const index = users.findIndex((user) => user.id === id);
+
+    if (index === -1) {
+      throw new NotFoundException('User not Found!');
+    }
+
+    const userDeleted = users.splice(index, 1);
+    return userDeleted;
   }
 }
