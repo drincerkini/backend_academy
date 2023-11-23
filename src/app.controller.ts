@@ -7,17 +7,14 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  UsePipes,
-  ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { GetUser } from './decorators/user.decorator';
-import { AuthMiddleware } from './middleware/auth.middleware';
+import { AuthGuard } from './auth/auth.guard';
 
 @Controller()
-@UsePipes(new ValidationPipe())
-@UsePipes(AuthMiddleware)
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -38,6 +35,7 @@ export class AppController {
     return user;
   }
 
+  @UseGuards(AuthGuard)
   @Get('/users')
   getUsers() {
     return this.appService.getUsers();
