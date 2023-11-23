@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 
@@ -39,19 +43,26 @@ export class AppService {
   getUsers() {
     return users;
   }
-  // getUsers(email: string) {
-  //   const usersByEmail = users.filter((user) => user.email === email);
-  //   return usersByEmail;
-  // }
 
-  updateUser(id: number, updateUserDto: UpdateUserDto) {
+  updateUser(id: number, updateUserDto: UpdateUserDto, user: any) {
     const userToUpdate = users.find((user) => user.id === id);
 
     if (!userToUpdate) {
       throw new NotFoundException('User not found!');
     }
 
-    Object.assign(userToUpdate, updateUserDto);
+    if (user && user.id !== userToUpdate.id) {
+      throw new UnauthorizedException('You are not authorized to update!');
+    }
+
+    if (updateUserDto.name !== undefined) {
+      userToUpdate.name = updateUserDto.name;
+    }
+
+    if (updateUserDto.email !== undefined) {
+      userToUpdate.email = updateUserDto.email;
+    }
+
     return updateUserDto;
   }
 

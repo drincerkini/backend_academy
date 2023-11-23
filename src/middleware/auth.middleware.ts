@@ -1,35 +1,24 @@
-// auth.middleware.ts
-
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Response, NextFunction } from 'express';
-import { AppService } from 'src/app.service';
-import CustomRequest from './custom-request.interface';
+import {
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly appService: AppService) {}
+  use(req: any, res: any, next: () => void) {
+    const authHeader = req.headers.authorization;
 
-  use(req: CustomRequest, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
-
-    if (!authHeader) {
-      return res.status(401).json({ message: 'Unauthorized' });
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+      throw new UnauthorizedException(
+        'Invalid or missing authorization header',
+      );
     }
 
-    const [, idValue] = authHeader.split('Basic ');
+    const userId = parseInt(authHeader.split(' ')[1], 10);
 
-    // Parse the idValue to a number
-    const userId = parseInt(idValue);
-
-    // Find the user in the service
-    const user = this.appService.getUserById(userId);
-
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    // Assign the authenticated user to the request object
-    req.user = user;
+    // Assign user to request
+    req.user = { id: userId };
 
     next();
   }

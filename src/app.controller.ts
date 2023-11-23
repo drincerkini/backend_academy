@@ -7,11 +7,17 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { GetUser } from './decorators/user.decorator';
+import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Controller()
+@UsePipes(new ValidationPipe())
+@UsePipes(AuthMiddleware)
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -37,11 +43,6 @@ export class AppController {
     return this.appService.getUsers();
   }
 
-  // @Get('/users')
-  // getUsers(@Query('email') email: string) {
-  //   return this.appService.getUsers(email);
-  // }
-
   @Patch('/users/:id')
   updateUser(
     @Param(
@@ -50,8 +51,9 @@ export class AppController {
     )
     id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @GetUser() user: any,
   ) {
-    return this.appService.updateUser(id, updateUserDto);
+    return this.appService.updateUser(id, updateUserDto, user);
   }
 
   @Delete('/users/:id')
