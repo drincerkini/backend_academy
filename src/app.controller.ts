@@ -23,6 +23,12 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/users')
+  getUsers() {
+    return this.appService.getUsers();
+  }
+
   @Get('/users/:id')
   getUserById(
     @Param(
@@ -33,12 +39,6 @@ export class AppController {
   ) {
     const user = this.appService.getUserById(id);
     return user;
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('/users')
-  getUsers() {
-    return this.appService.getUsers();
   }
 
   @Patch('/users/:id')

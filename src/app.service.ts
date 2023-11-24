@@ -34,6 +34,10 @@ export class AppService {
     return 'Hello World!';
   }
 
+  getUsers() {
+    return users;
+  }
+
   getUserById(id: number) {
     const foundUser = users.find((user) => user.id === id);
 
@@ -42,10 +46,6 @@ export class AppService {
     }
 
     return foundUser;
-  }
-
-  getUsers() {
-    return users;
   }
 
   updateUser(id: number, updateUserDto: UpdateUserDto, user: any) {

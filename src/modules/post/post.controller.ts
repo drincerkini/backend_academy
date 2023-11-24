@@ -32,7 +32,6 @@ export class PostController {
 
   @Post()
   createPost(@Body() post: CreatePostDto, @GetUser() user: any) {
-    console.log('hi');
     post.userId = user.id;
     return this.postService.createPost(post);
   }
