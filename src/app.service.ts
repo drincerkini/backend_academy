@@ -1,5 +1,4 @@
 import {
-  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -27,17 +26,6 @@ const users: UserDto[] = [
 
 @Injectable()
 export class AppService {
-  constructor(
-    @Inject('ObjectA') private objA,
-    @Inject('Connection') private connection,
-  ) {}
-  getHello(): string {
-    console.log(this.objA);
-    console.log(this.connection);
-
-    return 'Hello World!';
-  }
-
   getUserById(id: number) {
     const foundUser = users.find((user) => user.id === id);
 

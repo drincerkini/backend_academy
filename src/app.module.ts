@@ -2,26 +2,11 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthMiddleware } from './middleware/auth.middleware';
-import { PostModule } from './modules/post/post.module';
 
 @Module({
-  imports: [PostModule],
+  imports: [],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: 'ObjectA',
-      useValue: {
-        objKey: 'test',
-      },
-    },
-    {
-      provide: 'Connection',
-      useFactory: () => {
-        return 'test';
-      },
-    },
-  ],
+  providers: [AppService],
   exports: [AppService],
 })
 export class AppModule implements NestModule {
