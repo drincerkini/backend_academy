@@ -1,40 +1,36 @@
 import {
-  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { Roles } from './enums/roles.enum';
 
 const users: UserDto[] = [
   {
     id: 1,
     name: 'Drin',
-    email: 'dce@gmail.com',
+    email: 'dcerkini@gmail.com',
+    role: Roles.Admin,
   },
   {
     id: 2,
     name: 'filan',
     email: 'filan@gmail.com',
+    role: Roles.Member,
   },
   {
     id: 3,
     name: 'fistek',
     email: 'filan@gmail.com',
+    role: Roles.Member,
   },
 ];
 
 @Injectable()
 export class AppService {
-  constructor(
-    @Inject('ObjectA') private objA,
-    @Inject('Connection') private connection,
-  ) {}
   getHello(): string {
-    console.log(this.objA);
-    console.log(this.connection);
-
     return 'Hello World!';
   }
 

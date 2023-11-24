@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PostDto } from 'src/modules/post/dto/post.dto';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
@@ -20,7 +24,6 @@ const posts: PostDto[] = [
     userId: 1,
   },
 ];
-let idIdex = 4;
 
 @Injectable()
 export class PostService {
@@ -28,25 +31,42 @@ export class PostService {
     return posts;
   }
 
-  createPost(post: CreatePostDto) {
-    const newPost = new PostDto();
-    newPost.id = idIdex++;
-    newPost.title = post.title;
-    newPost.userId = post.userId;
-    return posts.push(newPost);
+  getPostById(id: number) {
+    return posts.find((post) => post.id === id);
   }
 
-  updatePost(id: number, updatePostDto: UpdatePostDto){
+  createPost(post: CreatePostDto) {
+    const newPost = { id: posts.length - 1, ...post };
+    posts.push(newPost);
+
+    return newPost;
+  }
+
+  updatePost(id: number, userId: number, updatePostDto: UpdatePostDto) {
     const findPost = posts.find((post) => post.id === id);
 
     if (!findPost) {
       throw new NotFoundException('Post not found!');
     }
 
+    if (findPost.userId !== userId && userId !== 1) {
+      throw new UnauthorizedException('Not authorized!');
+    }
+
     if (updatePostDto.title !== undefined) {
       findPost.title = updatePostDto.title;
     }
 
-    return updatePostDto;
+    return `updated succesfuly`;
+  }
+
+  deletePost(id: number) {
+    const index = posts.findIndex((post) => post.id === id);
+
+    if (index === -1) {
+      throw new NotFoundException('Post not found!');
+    }
+    posts.splice(index, 1);
+    return 'deleted succesfuly';
   }
 }
