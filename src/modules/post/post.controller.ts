@@ -2,14 +2,12 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Request,
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
@@ -59,10 +57,8 @@ export class PostController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-    @Request() req: any,
     @GetUser() user: any,
   ) {
-    const post = this.postService.getPostById(id);
     return this.postService.deletePost(id, user);
   }
 }
