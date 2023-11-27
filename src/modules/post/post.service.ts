@@ -6,6 +6,7 @@ import {
 import { PostDto } from 'src/modules/post/dto/post.dto';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
+import { Roles } from 'src/enums/roles.enum';
 
 const posts: PostDto[] = [
   {
@@ -25,6 +26,8 @@ const posts: PostDto[] = [
   },
 ];
 
+let index = 4;
+
 @Injectable()
 export class PostService {
   getPosts() {
@@ -35,21 +38,21 @@ export class PostService {
     return posts.find((post) => post.id === id);
   }
 
-  createPost(post: CreatePostDto) {
-    const newPost = { id: posts.length - 1, ...post };
+  createPost(post: CreatePostDto, id: number) {
+    const newPost = { id: index++, ...post, userId: id };
     posts.push(newPost);
 
     return newPost;
   }
 
-  updatePost(id: number, userId: number, updatePostDto: UpdatePostDto) {
+  updatePost(id: number, user: any, updatePostDto: UpdatePostDto) {
     const findPost = posts.find((post) => post.id === id);
 
     if (!findPost) {
       throw new NotFoundException('Post not found!');
     }
 
-    if (findPost.userId !== userId && userId !== 1) {
+    if (findPost.userId !== user.id && user.role !== Roles.Admin) {
       throw new UnauthorizedException('Not authorized!');
     }
 
@@ -57,15 +60,20 @@ export class PostService {
       findPost.title = updatePostDto.title;
     }
 
-    return `updated succesfuly`;
+    return findPost;
   }
 
-  deletePost(id: number) {
+  deletePost(id: number, user: any) {
     const index = posts.findIndex((post) => post.id === id);
 
     if (index === -1) {
       throw new NotFoundException('Post not found!');
     }
+
+    if (posts[index].userId !== user.id && user.role !== Roles.Admin) {
+      throw new UnauthorizedException(' Not Authorized!');
+    }
+
     posts.splice(index, 1);
     return 'deleted succesfuly';
   }

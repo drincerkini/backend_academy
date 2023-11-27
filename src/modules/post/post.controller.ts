@@ -22,6 +22,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { GetUser } from 'src/decorators/user.decorator';
 
 @Controller('posts')
+@UseGuards(AuthGuard)
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -32,13 +33,11 @@ export class PostController {
 
   @Post()
   createPost(@Body() post: CreatePostDto, @GetUser() user: any) {
-    post.userId = user.id;
-    return this.postService.createPost(post);
+    return this.postService.createPost(post, user.id);
   }
 
   @Patch('/:id')
   @SetMetadata('roles', [Roles.Admin])
-  @UseGuards(AuthGuard)
   updatePost(
     @Param(
       'id',
@@ -48,7 +47,7 @@ export class PostController {
     @Body() updatePostDto: UpdatePostDto,
     @GetUser() user: any,
   ) {
-    return this.postService.updatePost(id, user.id, updatePostDto);
+    return this.postService.updatePost(id, user, updatePostDto);
   }
 
   @Delete(':id')
@@ -61,8 +60,9 @@ export class PostController {
     )
     id: number,
     @Request() req: any,
+    @GetUser() user: any,
   ) {
     const post = this.postService.getPostById(id);
-    return this.postService.deletePost(id);
+    return this.postService.deletePost(id, user);
   }
 }

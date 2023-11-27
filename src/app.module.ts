@@ -7,25 +7,11 @@ import { PostModule } from './modules/post/post.module';
 @Module({
   imports: [PostModule],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: 'ObjectA',
-      useValue: {
-        objKey: 'test',
-      },
-    },
-    {
-      provide: 'Connection',
-      useFactory: () => {
-        return 'test';
-      },
-    },
-  ],
+  providers: [AppService],
   exports: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('users');
+    consumer.apply(AuthMiddleware).forRoutes('users', 'posts');
   }
 }

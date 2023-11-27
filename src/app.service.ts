@@ -55,15 +55,11 @@ export class AppService {
       throw new NotFoundException('User not found!');
     }
 
-    if (user && user.id !== userToUpdate.id) {
-      throw new UnauthorizedException('You are not authorized to update!');
-    }
-
-    if (updateUserDto.name !== undefined) {
+    if (updateUserDto.name !== undefined && updateUserDto !== null) {
       userToUpdate.name = updateUserDto.name;
     }
 
-    if (updateUserDto.email !== undefined) {
+    if (updateUserDto.email !== undefined && updateUserDto !== null) {
       userToUpdate.email = updateUserDto.email;
     }
 

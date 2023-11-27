@@ -9,8 +9,6 @@ async function bootstrap() {
 
   //Global validation pipes and middlewares
   app.useGlobalPipes(new ValidationPipe());
-  const authMiddleware = new AuthMiddleware(app.get(AppService));
-  app.use(authMiddleware.use.bind(authMiddleware));
 
   await app.listen(3000);
 }
