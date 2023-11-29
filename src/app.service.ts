@@ -55,11 +55,11 @@ export class AppService {
       throw new NotFoundException('User not found!');
     }
 
-    if (updateUserDto.name !== undefined && updateUserDto !== null) {
+    if (updateUserDto.name) {
       userToUpdate.name = updateUserDto.name;
     }
 
-    if (updateUserDto.email !== undefined && updateUserDto !== null) {
+    if (updateUserDto.email) {
       userToUpdate.email = updateUserDto.email;
     }
 
