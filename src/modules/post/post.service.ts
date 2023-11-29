@@ -3,78 +3,79 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PostDto } from 'src/modules/post/dto/post.dto';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { Roles } from 'src/enums/roles.enum';
-
-const posts: PostDto[] = [
-  {
-    id: 1,
-    title: 'post 1',
-    userId: 1,
-  },
-  {
-    id: 2,
-    title: 'post 2',
-    userId: 2,
-  },
-  {
-    id: 3,
-    title: 'post 3',
-    userId: 1,
-  },
-];
-
-let index = 4;
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PostService {
-  getPosts() {
-    return posts;
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async getPosts() {
+    return await this.prismaService.post.findMany({
+      include: { author: true },
+    });
   }
 
-  getPostById(id: number) {
-    return posts.find((post) => post.id === id);
+  async getPostById(id: number) {
+    const post = await this.prismaService.post.findUnique({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('Post not found!');
+    }
+
+    return post;
   }
 
-  createPost(post: CreatePostDto, id: number) {
-    const newPost = { id: index++, ...post, userId: id };
-    posts.push(newPost);
+  async createPost(post: CreatePostDto, userId: number) {
+    const { title, content } = post;
+    const newPost = await this.prismaService.post.create({
+      data: {
+        title,
+        content,
+        authorId: userId,
+      },
+    });
 
     return newPost;
   }
 
-  updatePost(id: number, user: any, updatePostDto: UpdatePostDto) {
-    const findPost = posts.find((post) => post.id === id);
+  async updatePost(id: number, user: any, updatePostDto: UpdatePostDto) {
+    const findPost = await this.prismaService.post.findUnique({
+      where: {
+        id: id,
+      },
+      include: { author: true },
+    });
 
     if (!findPost) {
       throw new NotFoundException('Post not found!');
     }
 
-    if (findPost.userId !== user.id && user.role !== Roles.Admin) {
+    if (findPost.author.id !== user.id && user.role !== Roles.Admin) {
       throw new UnauthorizedException('Not authorized!');
     }
 
-    if (updatePostDto.title !== undefined) {
-      findPost.title = updatePostDto.title;
-    }
-
-    return findPost;
+    return await this.prismaService.post.update({
+      where: { id: id },
+      data: updatePostDto,
+    });
   }
 
-  deletePost(id: number, user: any) {
-    const index = posts.findIndex((post) => post.id === id);
+  async deletePost(id: number, user: any) {
+    const findPost = await this.prismaService.post.findUnique({
+      where: { id: id },
+    });
 
-    if (index === -1) {
+    if (!findPost) {
       throw new NotFoundException('Post not found!');
     }
 
-    if (posts[index].userId !== user.id && user.role !== Roles.Admin) {
-      throw new UnauthorizedException(' Not Authorized!');
+    if (findPost.authorId !== user.id && user.role !== Roles.Admin) {
+      throw new UnauthorizedException('You are Not Authorized!');
     }
 
-    posts.splice(index, 1);
-    return 'deleted succesfuly';
+    return await this.prismaService.post.delete({ where: { id: id } });
   }
 }

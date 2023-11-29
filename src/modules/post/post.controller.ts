@@ -25,18 +25,18 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
-  getPosts() {
-    return this.postService.getPosts();
+  async getPosts() {
+    return await this.postService.getPosts();
   }
 
   @Post()
-  createPost(@Body() post: CreatePostDto, @GetUser() user: any) {
-    return this.postService.createPost(post, user.id);
+  async createPost(@Body() post: CreatePostDto, @GetUser() user: any) {
+    return await this.postService.createPost(post, user.id);
   }
 
   @Patch('/:id')
   @SetMetadata('roles', [Roles.Admin])
-  updatePost(
+  async updatePost(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
@@ -45,13 +45,13 @@ export class PostController {
     @Body() updatePostDto: UpdatePostDto,
     @GetUser() user: any,
   ) {
-    return this.postService.updatePost(id, user, updatePostDto);
+    return await this.postService.updatePost(id, user, updatePostDto);
   }
 
   @Delete(':id')
   @SetMetadata('roles', [Roles.Admin])
   @UseGuards(RolesGuard)
-  deletePost(
+  async deletePost(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
@@ -59,6 +59,6 @@ export class PostController {
     id: number,
     @GetUser() user: any,
   ) {
-    return this.postService.deletePost(id, user);
+    return await this.postService.deletePost(id, user);
   }
 }
