@@ -7,12 +7,14 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { GetUser } from './decorators/user.decorator';
 import { AuthGuard } from './auth/auth.guard';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Controller()
 export class AppController {
@@ -25,24 +27,29 @@ export class AppController {
 
   @UseGuards(AuthGuard)
   @Get('/users')
-  getUsers() {
-    return this.appService.getUsers();
+  async getUsers() {
+    return await this.appService.getUsers();
   }
 
   @Get('/users/:id')
-  getUserById(
+  async getUserById(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
   ) {
-    const user = this.appService.getUserById(id);
+    const user = await this.appService.getUserById(id);
     return user;
   }
 
+  @Post('/users')
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return await this.appService.createUser(createUserDto);
+  }
+
   @Patch('/users/:id')
-  updateUser(
+  async updateUser(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
@@ -51,17 +58,17 @@ export class AppController {
     @Body() updateUserDto: UpdateUserDto,
     @GetUser() user: any,
   ) {
-    return this.appService.updateUser(id, updateUserDto, user);
+    return await this.appService.updateUser(id, updateUserDto, user);
   }
 
   @Delete('/users/:id')
-  deleteUser(
+  async deleteUser(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
   ) {
-    return this.appService.deleteUser(id);
+    return await this.appService.deleteUser(id);
   }
 }

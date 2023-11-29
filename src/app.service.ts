@@ -6,6 +6,8 @@ import {
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Roles } from './enums/roles.enum';
+import { PrismaService } from './modules/prisma/prisma.service';
+import { CreateUserDto } from './dto/createUser.dto';
 
 const users: UserDto[] = [
   {
@@ -30,16 +32,22 @@ const users: UserDto[] = [
 
 @Injectable()
 export class AppService {
+  constructor(private readonly prismaService: PrismaService) {}
+
   getHello(): string {
     return 'Hello World!';
   }
 
-  getUsers() {
-    return users;
+  async getUsers() {
+    return await this.prismaService.user.findMany();
   }
 
-  getUserById(id: number) {
-    const foundUser = users.find((user) => user.id === id);
+  async getUserById(id: number) {
+    const foundUser = await this.prismaService.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
 
     if (!foundUser) {
       throw new NotFoundException('User not found!');
@@ -48,32 +56,48 @@ export class AppService {
     return foundUser;
   }
 
-  updateUser(id: number, updateUserDto: UpdateUserDto, user: any) {
-    const userToUpdate = users.find((user) => user.id === id);
-
-    if (!userToUpdate) {
-      throw new NotFoundException('User not found!');
-    }
-
-    if (updateUserDto.name) {
-      userToUpdate.name = updateUserDto.name;
-    }
-
-    if (updateUserDto.email) {
-      userToUpdate.email = updateUserDto.email;
-    }
-
-    return updateUserDto;
+  async createUser(createUserDto: CreateUserDto) {
+    return await this.prismaService.user.create({
+      data: createUserDto,
+    });
   }
 
-  deleteUser(id: number) {
-    const index = users.findIndex((user) => user.id === id);
+  async updateUser(id: number, updateUserDto: UpdateUserDto, user: any) {
+    // const userToUpdate = users.find((user) => user.id === id);
 
-    if (index === -1) {
-      throw new NotFoundException('User not Found!');
-    }
+    const userToUpdate = await this.prismaService.user.update({
+      where: { id: id },
+      data: updateUserDto,
+    });
 
-    const userDeleted = users.splice(index, 1);
+    // if (!userToUpdate) {
+    //   throw new NotFoundException('User not found!');
+    // }
+
+    // if (updateUserDto.name) {
+    //   userToUpdate.name = updateUserDto.name;
+    // }
+
+    // if (updateUserDto.email) {
+    //   userToUpdate.email = updateUserDto.email;
+    // }
+
+    return userToUpdate;
+  }
+
+  async deleteUser(id: number) {
+    // const index = users.findIndex((user) => user.id === id);
+
+    // if (index === -1) {
+    //   throw new NotFoundException('User not Found!');
+    // }
+
+    // const userDeleted = users.splice(index, 1);
+    const userDeleted = await this.prismaService.user.delete({
+      where: {
+        id: id,
+      },
+    });
     return userDeleted;
   }
 }
