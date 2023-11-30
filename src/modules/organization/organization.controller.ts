@@ -25,13 +25,8 @@ export class OrganizationController {
   }
 
   @Get()
-  getFilteredOrganizations(@Query('name') name: string) {
-    return this.organizationService.filterOrganization(name);
-  }
-
-  @Get('/list')
-  findAll() {
-    return this.organizationService.findAll();
+  findAll(@Query('name') name?: string) {
+    return this.organizationService.findAll(name);
   }
 
   @Get(':id')
@@ -52,6 +47,18 @@ export class OrganizationController {
     return this.organizationService.remove(+id);
   }
 
+  // -----------------------------------------
+  @Get(':id/employees')
+  getEmployeeFromOrganization(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return this.organizationService.getEmployeeFromOrganization(id);
+  }
+
   @Post(':id/employees')
   addEmployeeToOrganization(
     @Param(
@@ -68,17 +75,6 @@ export class OrganizationController {
     return this.organizationService.addEmployeeToOrganization(id, userId);
   }
 
-  @Get(':id/employees')
-  getEmployeeFromOrganization(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
-    id: number,
-  ) {
-    return this.organizationService.getEmployeeFromOrganization(id);
-  }
-
   @Delete(':id/employees/:userId')
   deleteUserFromOrganization(
     @Param(
@@ -93,5 +89,16 @@ export class OrganizationController {
     userId: number,
   ) {
     return this.organizationService.deleteUserFromOrganization(id, userId);
+  }
+
+  @Post(':id/logo')
+  addLogoToOrganization(
+    @Param(
+      'id',
+      new ValidationPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return this.organizationService.addLogoToOrganization(id);
   }
 }

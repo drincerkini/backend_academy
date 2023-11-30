@@ -1,7 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateOrganizationDto } from './create-organization.dto';
-import { IsArray, IsOptional, IsString } from 'class-validator';
-import { User } from '@prisma/client';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateOrganizationDto extends PartialType(CreateOrganizationDto) {
   @IsString()
