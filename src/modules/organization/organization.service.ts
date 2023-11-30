@@ -130,5 +130,20 @@ export class OrganizationService {
     return findOrganization;
   }
 
-  async addLogoToOrganization(id: number) {}
+  async addLogoToOrganization(id: number, file: Express.Multer.File) {
+    const findOrg = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!findOrg) {
+      throw new NotFoundException('Organization not found!');
+    }
+
+    return this.prismaService.organization.update({
+      where: { id },
+      data: {
+        logo: file.filename,
+      },
+    });
+  }
 }

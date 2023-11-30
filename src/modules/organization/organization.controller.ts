@@ -7,13 +7,17 @@ import {
   Param,
   Delete,
   Query,
-  ValidationPipe,
   ParseIntPipe,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('organization')
 export class OrganizationController {
@@ -92,13 +96,28 @@ export class OrganizationController {
   }
 
   @Post(':id/logo')
-  addLogoToOrganization(
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          const filename = `${uniqueSuffix}${ext}`;
+          callback(null, filename);
+        },
+      }),
+    }),
+  )
+  addLogo(
     @Param(
       'id',
-      new ValidationPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.organizationService.addLogoToOrganization(id);
+    return this.organizationService.addLogoToOrganization(id, file);
   }
 }
