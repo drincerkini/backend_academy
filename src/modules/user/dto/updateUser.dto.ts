@@ -1,11 +1,17 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsIn, IsOptional, IsString } from 'class-validator';
+import { Roles } from 'src/enums/roles.enum';
 
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  readonly name?: string;
+  name?: string;
 
   @IsOptional()
   @IsEmail()
-  readonly email?: string;
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(Object.values(Roles), { message: 'Invalid Role' })
+  role?: string;
 }

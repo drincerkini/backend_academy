@@ -21,17 +21,11 @@ export class UserService {
   }
 
   async getUserById(id: number) {
-    const foundUser = await this.prismaService.user.findUnique({
+    return await this.prismaService.user.findUnique({
       where: {
         id: id,
       },
     });
-
-    // if (!foundUser) {
-    //   throw new NotFoundException('User not found!');
-    // }
-
-    return foundUser;
   }
 
   async createUser(createUserDto: CreateUserDto) {
