@@ -5,9 +5,10 @@ import { AuthMiddleware } from '../../middleware/auth.middleware';
 import { PostModule } from '../post/post.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { UserModule } from '../user/user.module';
+import { OrganizationModule } from '../organization/organization.module';
 
 @Module({
-  imports: [PostModule, PrismaModule, UserModule],
+  imports: [PostModule, PrismaModule, UserModule, OrganizationModule],
   controllers: [AppController],
   providers: [AppService],
   exports: [AppService],

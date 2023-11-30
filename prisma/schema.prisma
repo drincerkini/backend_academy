@@ -17,6 +17,7 @@ model User {
   name String? 
   role String @default("member")
   posts Post[]
+  organization Organization []
 }
 
 
@@ -28,3 +29,10 @@ model Post {
   authorId Int
   author User @relation(fields: [authorId], references: [id])
 }
+
+model Organization {
+  id Int @id @default(autoincrement())
+  name String 
+  logo String?
+  employees User []
+} 
