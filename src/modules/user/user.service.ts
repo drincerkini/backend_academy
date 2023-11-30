@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Roles } from 'src/enums/roles.enum';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -60,7 +61,7 @@ export class UserService {
     return userToUpdate;
   }
 
-  async deleteUser(id: number, user: any) {
+  async deleteUser(id: number, user: User) {
     const findUser = await this.prismaService.user.findUnique({
       where: { id: id },
     });

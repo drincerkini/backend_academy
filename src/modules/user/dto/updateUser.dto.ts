@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Roles } from 'src/enums/roles.enum';
 
 export class UpdateUserDto {
@@ -12,6 +12,6 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(Object.values(Roles), { message: 'Invalid Role' })
+  @IsEnum(Roles)
   role?: string;
 }

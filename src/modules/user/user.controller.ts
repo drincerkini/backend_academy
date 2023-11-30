@@ -15,6 +15,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateUserDto } from './dto/createUser.dto';
 import { GetUser } from 'src/decorators/user.decorator';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { User } from '@prisma/client';
 
 @Controller('users')
 export class UserController {
@@ -62,7 +63,7 @@ export class UserController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-    @GetUser() user: any,
+    @GetUser() user: User,
   ) {
     return await this.userService.deleteUser(id, user);
   }
