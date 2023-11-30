@@ -25,6 +25,9 @@ export class UserService {
       where: {
         id: id,
       },
+      include: {
+        posts: true,
+      },
     });
   }
 
