@@ -2,8 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { copyFileSync } from 'fs';
-import { UserService } from '../user/user.service';
 
 @Injectable()
 export class OrganizationService {
@@ -12,7 +10,7 @@ export class OrganizationService {
   async create(createOrganizationDto: CreateOrganizationDto) {
     const { name } = createOrganizationDto;
 
-    const newOrganozation = this.prismaService.organization.create({
+    const newOrganozation = await this.prismaService.organization.create({
       data: {
         name,
         logo: 'test',
@@ -22,23 +20,25 @@ export class OrganizationService {
     return newOrganozation;
   }
 
-  async filterOrganization(name: string) {
-    return this.prismaService.organization.findFirst({
-      where: {
-        name,
-      },
-    });
-  }
-  async findAll() {
-    return this.prismaService.organization.findMany({
-      include: {
-        employees: true,
-      },
-    });
+  async findAll(name?: string) {
+    if (name) {
+      return await this.prismaService.organization.findFirst({
+        where: { name },
+        include: {
+          employees: true,
+        },
+      });
+    } else {
+      return await this.prismaService.organization.findMany({
+        include: {
+          employees: true,
+        },
+      });
+    }
   }
 
-  findOne(id: number) {
-    return this.prismaService.organization.findUnique({ where: { id } });
+  async findOne(id: number) {
+    return await this.prismaService.organization.findUnique({ where: { id } });
   }
 
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
@@ -67,37 +67,7 @@ export class OrganizationService {
     return await this.prismaService.organization.delete({ where: { id } });
   }
 
-  async addEmployeeToOrganization(id: number, userId: number) {
-    const findOrganization = await this.prismaService.organization.findUnique({
-      where: { id },
-      include: {
-        employees: true,
-      },
-    });
-
-    if (!findOrganization) {
-      throw new NotFoundException('User not Found!');
-    }
-
-    const findUser = await this.prismaService.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!findUser) {
-      throw new NotFoundException('User Not found');
-    }
-
-    return this.prismaService.organization.update({
-      where: { id },
-      data: {
-        employees: {
-          connect: {
-            id: findUser.id,
-          },
-        },
-      },
-    });
-  }
+  // -------------------------------------------------------------------------
 
   // test to add duplicate users to organization
   //read abput connect and disconnect
@@ -113,16 +83,52 @@ export class OrganizationService {
     return list.employees;
   }
 
+  async addEmployeeToOrganization(id: number, userId: number) {
+    const findOrganization = await this.prismaService.organization.findUnique({
+      where: { id },
+      include: {
+        employees: true,
+      },
+    });
+
+    if (!findOrganization) {
+      throw new NotFoundException('Organization not Found!');
+    }
+
+    const findUser = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!findUser) {
+      throw new NotFoundException('User Not found');
+    }
+
+    return await this.prismaService.organization.update({
+      where: { id },
+      data: {
+        employees: {
+          connect: {
+            id: findUser.id,
+          },
+        },
+      },
+    });
+  }
+
   async deleteUserFromOrganization(id: number, userId: number) {
     const findOrganization = await this.prismaService.organization.update({
       where: { id },
       data: {
         employees: {
-          disconnect: { id: userId },
+          disconnect: {
+            id: userId,
+          },
         },
       },
     });
 
     return findOrganization;
   }
+
+  async addLogoToOrganization(id: number) {}
 }
