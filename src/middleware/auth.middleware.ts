@@ -3,11 +3,11 @@ import {
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AppService } from 'src/app.service';
+import { UserService } from 'src/modules/user/user.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly userService: UserService) {}
 
   use(req: any, res: any, next: () => void) {
     const authHeader = req.headers.authorization;
@@ -20,7 +20,7 @@ export class AuthMiddleware implements NestMiddleware {
 
     const userId = parseInt(authHeader.split(' ')[1], 10);
 
-    const user = this.appService.getUserById(userId);
+    const user = this.userService.getUserById(userId);
 
     if (!user) {
       throw new UnauthorizedException('User not found!');

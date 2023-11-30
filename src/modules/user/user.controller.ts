@@ -10,28 +10,23 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AppService } from './app.service';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { GetUser } from './decorators/user.decorator';
-import { AuthGuard } from './auth/auth.guard';
+import { UserService } from './user.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateUserDto } from './dto/createUser.dto';
+import { GetUser } from 'src/decorators/user.decorator';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
-@Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+@Controller('users')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @UseGuards(AuthGuard)
-  @Get('/users')
+  @Get()
   async getUsers() {
-    return await this.appService.getUsers();
+    return await this.userService.getUsers();
   }
 
-  @Get('/users/:id')
+  @Get(':id')
   async getUserById(
     @Param(
       'id',
@@ -39,16 +34,15 @@ export class AppController {
     )
     id: number,
   ) {
-    const user = await this.appService.getUserById(id);
-    return user;
+    return await this.userService.getUserById(id);
   }
 
-  @Post('/users')
+  @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    return await this.appService.createUser(createUserDto);
+    return await this.userService.createUser(createUserDto);
   }
 
-  @Patch('/users/:id')
+  @Patch(':id')
   async updateUser(
     @Param(
       'id',
@@ -58,17 +52,18 @@ export class AppController {
     @Body() updateUserDto: UpdateUserDto,
     @GetUser() user: any,
   ) {
-    return await this.appService.updateUser(id, updateUserDto, user);
+    return await this.userService.updateUser(id, updateUserDto, user);
   }
 
-  @Delete('/users/:id')
+  @Delete(':id')
   async deleteUser(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
+    @GetUser() user: any,
   ) {
-    return await this.appService.deleteUser(id);
+    return await this.userService.deleteUser(id, user);
   }
 }

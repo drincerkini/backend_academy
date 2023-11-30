@@ -1,12 +1,13 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthMiddleware } from './middleware/auth.middleware';
-import { PostModule } from './modules/post/post.module';
-import { PrismaModule } from './modules/prisma/prisma.module';
+import { AuthMiddleware } from '../../middleware/auth.middleware';
+import { PostModule } from '../post/post.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [PostModule, PrismaModule],
+  imports: [PostModule, PrismaModule, UserModule],
   controllers: [AppController],
   providers: [AppService],
   exports: [AppService],
