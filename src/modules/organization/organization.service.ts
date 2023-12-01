@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { OrganizationDto } from './dto/organization.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -13,7 +14,6 @@ export class OrganizationService {
     const newOrganozation = await this.prismaService.organization.create({
       data: {
         name,
-        logo: 'test',
       },
     });
 
@@ -22,18 +22,31 @@ export class OrganizationService {
 
   async findAll(name?: string) {
     if (name) {
-      return await this.prismaService.organization.findFirst({
+      const organization = await this.prismaService.organization.findFirst({
         where: { name },
-        include: {
-          employees: true,
-        },
+        include: { employees: true },
       });
+
+      if (!organization) {
+        throw new NotFoundException('Organization not Found!');
+      }
+
+      const org: OrganizationDto = {
+        name: organization.name,
+        employees: organization.employees.map((emp) => ({
+          name: emp.name,
+        })),
+      };
+
+      return org;
     } else {
-      return await this.prismaService.organization.findMany({
-        include: {
-          employees: true,
-        },
-      });
+      const list = await this.prismaService.organization.findMany();
+
+      const organizationsDto = list.map((org) => ({
+        name: org.name,
+      }));
+
+      return organizationsDto;
     }
   }
 
