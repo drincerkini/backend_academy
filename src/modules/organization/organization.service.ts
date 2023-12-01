@@ -57,10 +57,13 @@ export class OrganizationService {
 
       return org;
     } else {
-      const list = await this.prismaService.organization.findMany();
+      const list = await this.prismaService.organization.findMany({
+        include: { employees: true },
+      });
 
       const organizationsDto = list.map((org) => ({
         name: org.name,
+        numberOfEmployees: org.employees.length,
       }));
 
       return organizationsDto;
