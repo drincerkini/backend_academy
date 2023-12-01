@@ -1,5 +1,4 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
-import { PostDto } from 'src/modules/post/dto/post.dto';
 
 export class CreateUserDto {
   @IsEmail()
@@ -8,5 +7,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   name?: string;
-  //   posts: PostDto[];
 }

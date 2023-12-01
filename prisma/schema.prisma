@@ -32,7 +32,7 @@ model Post {
 
 model Organization {
   id Int @id @default(autoincrement())
-  name String 
+  name String @unique()
   logo String?
   employees User []
 } 

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,6 +15,17 @@ export class OrganizationService {
   async create(createOrganizationDto: CreateOrganizationDto) {
     const { name } = createOrganizationDto;
 
+    const existingOrg = await this.prismaService.organization.findUnique({
+      where: { name },
+    });
+
+    //checking if the organization with the same name already exists
+    if (existingOrg) {
+      throw new ConflictException(
+        'Organization with this name already exists!',
+      );
+    }
+
     const newOrganozation = await this.prismaService.organization.create({
       data: {
         name,
@@ -21,8 +36,10 @@ export class OrganizationService {
   }
 
   async findAll(name?: string) {
+    // checking if the name from query is not null and returning a single organization depending on that query
+    // if name is null returning the whole list of organizations
     if (name) {
-      const organization = await this.prismaService.organization.findFirst({
+      const organization = await this.prismaService.organization.findUnique({
         where: { name },
         include: { employees: true },
       });
@@ -114,6 +131,18 @@ export class OrganizationService {
 
     if (!findUser) {
       throw new NotFoundException('User Not found');
+    }
+
+    // searching if an employee with the same id is already added
+    const isEmployeeAlreadyAdded = findOrganization.employees.some(
+      (emp) => emp.id === findUser.id,
+    );
+
+    // if the employee is already added return an error
+    if (isEmployeeAlreadyAdded) {
+      throw new ConflictException(
+        'Employee already is added to this organization!',
+      );
     }
 
     return await this.prismaService.organization.update({
