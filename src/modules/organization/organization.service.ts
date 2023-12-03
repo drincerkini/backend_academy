@@ -7,6 +7,7 @@ import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrganizationDto } from './dto/organization.dto';
+import { EmployeeFromOrgDto } from './dto/employeeFromOrg.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -58,12 +59,19 @@ export class OrganizationService {
       return org;
     } else {
       const list = await this.prismaService.organization.findMany({
-        include: { employees: true },
+        select: {
+          name: true,
+          _count: {
+            select: {
+              employees: true,
+            },
+          },
+        },
       });
 
       const organizationsDto = list.map((org) => ({
         name: org.name,
-        numberOfEmployees: org.employees.length,
+        numberOfEmployees: org._count,
       }));
 
       return organizationsDto;
@@ -71,7 +79,15 @@ export class OrganizationService {
   }
 
   async findOne(id: number) {
-    return await this.prismaService.organization.findUnique({ where: { id } });
+    const organization = await this.prismaService.organization.findUnique({
+      where: { id },
+    });
+
+    if (!organization) {
+      throw new NotFoundException('Organization not found!');
+    }
+
+    return organization;
   }
 
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
@@ -113,7 +129,12 @@ export class OrganizationService {
       },
     });
 
-    return list.employees;
+    const employees: EmployeeFromOrgDto[] = list.employees.map((emp) => ({
+      name: emp.name,
+      email: emp.email,
+    }));
+
+    return employees;
   }
 
   async addEmployeeToOrganization(id: number, userId: number) {
@@ -129,7 +150,9 @@ export class OrganizationService {
     }
 
     const findUser = await this.prismaService.user.findUnique({
-      where: { id: userId },
+      where: {
+        id: userId,
+      },
     });
 
     if (!findUser) {
