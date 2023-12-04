@@ -7,13 +7,18 @@ import {
   Param,
   Delete,
   Query,
-  ValidationPipe,
   ParseIntPipe,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { AddEmployeeToOrgDto } from './dto/addEmployeeToOrg.dto';
 
 @Controller('organization')
 export class OrganizationController {
@@ -25,13 +30,8 @@ export class OrganizationController {
   }
 
   @Get()
-  getFilteredOrganizations(@Query('name') name: string) {
-    return this.organizationService.filterOrganization(name);
-  }
-
-  @Get('/list')
-  findAll() {
-    return this.organizationService.findAll();
+  findAll(@Query('name') name?: string) {
+    return this.organizationService.findAll(name);
   }
 
   @Get(':id')
@@ -52,22 +52,7 @@ export class OrganizationController {
     return this.organizationService.remove(+id);
   }
 
-  @Post(':id/employees')
-  addEmployeeToOrganization(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
-    id: number,
-    @Body(
-      'userId',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
-    userId: number,
-  ) {
-    return this.organizationService.addEmployeeToOrganization(id, userId);
-  }
-
+  // -----------------------------------------
   @Get(':id/employees')
   getEmployeeFromOrganization(
     @Param(
@@ -77,6 +62,19 @@ export class OrganizationController {
     id: number,
   ) {
     return this.organizationService.getEmployeeFromOrganization(id);
+  }
+
+  @Post(':id/employees')
+  addEmployeeToOrganization(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+    @Body('userId')
+    userData: AddEmployeeToOrgDto,
+  ) {
+    return this.organizationService.addEmployeeToOrganization(id, userData);
   }
 
   @Delete(':id/employees/:userId')
@@ -93,5 +91,31 @@ export class OrganizationController {
     userId: number,
   ) {
     return this.organizationService.deleteUserFromOrganization(id, userId);
+  }
+
+  @Post(':id/logo')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          const filename = `${uniqueSuffix}${ext}`;
+          callback(null, filename);
+        },
+      }),
+    }),
+  )
+  addLogo(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.organizationService.addLogoToOrganization(id, file);
   }
 }

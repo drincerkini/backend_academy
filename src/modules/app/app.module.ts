@@ -6,9 +6,16 @@ import { PostModule } from '../post/post.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { UserModule } from '../user/user.module';
 import { OrganizationModule } from '../organization/organization.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [PostModule, PrismaModule, UserModule, OrganizationModule],
+  imports: [
+    PostModule,
+    PrismaModule,
+    UserModule,
+    OrganizationModule,
+    MulterModule.register({ dest: './uploads' }),
+  ],
   controllers: [AppController],
   providers: [AppService],
   exports: [AppService],
