@@ -18,6 +18,7 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { AddEmployeeToOrgDto } from './dto/addEmployeeToOrg.dto';
 
 @Controller('organization')
 export class OrganizationController {
@@ -70,13 +71,10 @@ export class OrganizationController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-    @Body(
-      'userId',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
-    userId: number,
+    @Body('userId')
+    userData: AddEmployeeToOrgDto,
   ) {
-    return this.organizationService.addEmployeeToOrganization(id, userId);
+    return this.organizationService.addEmployeeToOrganization(id, userData);
   }
 
   @Delete(':id/employees/:userId')

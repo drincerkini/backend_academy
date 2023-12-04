@@ -8,6 +8,7 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrganizationDto } from './dto/organization.dto';
 import { EmployeeFromOrgDto } from './dto/employeeFromOrg.dto';
+import { AddEmployeeToOrgDto } from './dto/addEmployeeToOrg.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -137,7 +138,7 @@ export class OrganizationService {
     return employees;
   }
 
-  async addEmployeeToOrganization(id: number, userId: number) {
+  async addEmployeeToOrganization(id: number, userData: AddEmployeeToOrgDto) {
     const findOrganization = await this.prismaService.organization.findUnique({
       where: { id },
       include: {
@@ -151,7 +152,7 @@ export class OrganizationService {
 
     const findUser = await this.prismaService.user.findUnique({
       where: {
-        id: userId,
+        id: userData.userId,
       },
     });
 
