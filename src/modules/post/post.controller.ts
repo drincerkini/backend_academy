@@ -18,7 +18,10 @@ import { Roles } from 'src/enums/roles.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { GetUser } from 'src/decorators/user.decorator';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+@ApiSecurity('basic')
+@ApiTags('Posts')
 @Controller('posts')
 @UseGuards(AuthGuard)
 export class PostController {

@@ -15,4 +15,11 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('Should return Hello World!', async () => {
+    const result = 'Hello World!';
+    jest.spyOn(service, 'getHello').mockImplementation(() => result);
+
+    expect(service.getHello()).toBe(result);
+  });
 });

@@ -18,8 +18,12 @@ export class AuthMiddleware implements NestMiddleware {
       );
     }
 
-    const userId = parseInt(authHeader.split(' ')[1], 10);
-
+    const base64Credentials = authHeader.split(' ')[1];
+    const decodedCredentials = Buffer.from(
+      base64Credentials,
+      'base64',
+    ).toString('utf-8');
+    const userId = parseInt(decodedCredentials, 10);
     const user = this.userService.getUserById(userId);
 
     if (!user) {

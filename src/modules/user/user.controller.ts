@@ -16,7 +16,10 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { GetUser } from 'src/decorators/user.decorator';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { User } from '@prisma/client';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+@ApiSecurity('basic')
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
