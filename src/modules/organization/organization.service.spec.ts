@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationService } from './organization.service';
 import { OrganizationListDto } from './dto/organization.list.dto';
+import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -10,17 +12,9 @@ describe('OrganizationService', () => {
 
     findOne: jest.fn(),
 
-    create: jest.fn((dto) => {
-      const newOrg = {
-        id: expect.any(Number),
-        ...dto,
-      };
-      return newOrg;
-    }),
+    create: jest.fn(),
 
-    update: jest.fn((id, dto) => {
-      return { id, ...dto };
-    }),
+    update: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -55,33 +49,39 @@ describe('OrganizationService', () => {
     expect(result).toEqual(mockOrganizations);
   });
 
-  describe('findOne', () => {
-    it('should return organization when found', async () => {
-      const mockOrganization = { id: 1, name: 'drin' };
+  it('should return organization when found', async () => {
+    const mockOrganization = { id: 1, name: 'drin' };
 
-      mockOrganizationService.findOne.mockResolvedValueOnce(mockOrganization);
+    mockOrganizationService.findOne.mockResolvedValueOnce(mockOrganization);
 
-      const result = await service.findOne(1);
+    const result = await service.findOne(1);
 
-      expect(result).toEqual(mockOrganization);
-    });
+    expect(result).toEqual(mockOrganization);
   });
 
   it('should create a new Organization', async () => {
-    const dto = { name: 'new Organization' };
-    expect(service.create(dto)).toEqual({
-      id: expect.any(Number),
-      ...dto,
-    });
+    const createDto: CreateOrganizationDto = { name: 'new Org' };
+    mockOrganizationService.create.mockResolvedValue(createDto);
+
+    const result = await service.create(createDto);
+
+    expect(result).toEqual(createDto);
+
+    expect(mockOrganizationService.create).toHaveBeenCalled();
   });
 
   it('should update org', async () => {
-    const dto = { name: 'dto' };
+    const updateDto: UpdateOrganizationDto = {
+      name: 'test case',
+    };
 
-    expect(service.update(2, dto)).toEqual({
-      id: 2,
-      ...dto,
-    });
+    const mockUpdatedOrg = { id: 1, name: 'drin', ...updateDto };
+
+    mockOrganizationService.update.mockResolvedValue(mockUpdatedOrg);
+
+    const result = await service.update(1, updateDto);
+
+    expect(result).toEqual(mockUpdatedOrg);
 
     expect(mockOrganizationService.update).toHaveBeenCalled();
   });
