@@ -14,6 +14,18 @@ describe('OrganizationService', () => {
     create: jest.fn(),
 
     update: jest.fn(),
+
+    remove: jest.fn(),
+
+    getEmployeeFromOrganization: jest.fn(),
+
+    addEmployeeToOrganization: jest.fn(),
+
+    findUser: jest.fn(),
+
+    deleteUserFromOrganization: jest.fn(),
+
+    addLogoToOrganization: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -84,4 +96,98 @@ describe('OrganizationService', () => {
 
     expect(mockOrganizationService.update).toHaveBeenCalled();
   });
+
+  it('should delete an organization and return the result', async () => {
+    const mockOrganization = { id: 12, name: 'integration test case 5' };
+
+    mockOrganizationService.remove.mockResolvedValue(mockOrganization);
+
+    const existingId = 12;
+
+    const result = await service.remove(existingId);
+
+    expect(mockOrganizationService.remove).toHaveBeenCalled();
+
+    expect(result).toEqual(mockOrganization);
+  });
+
+  it('should return employees from the organization', async () => {
+    const mockOrganization = {
+      id: 12,
+      name: 'integration test case 5',
+      employees: [
+        {
+          name: 'filan',
+          email: 'fialn@gmail.com',
+        },
+        {
+          name: 'update 10',
+          email: 'update10@gmail.com',
+        },
+      ],
+    };
+
+    mockOrganizationService.getEmployeeFromOrganization.mockResolvedValue(
+      mockOrganization,
+    );
+
+    const orgId = 12;
+
+    const result = await service.getEmployeeFromOrganization(orgId);
+
+    expect(
+      mockOrganizationService.getEmployeeFromOrganization,
+    ).toHaveBeenCalled();
+
+    expect(result).toEqual(mockOrganization);
+  });
+
+  // it('should add employee to the organization', async () => {
+  //   const mockOrganization = {
+  //     id: 13,
+  //     name: 'integration test case 6',
+  //     employees: [],
+  //   };
+
+  //   mockOrganizationService.addEmployeeToOrganization.mockResolvedValue(
+  //     mockOrganization,
+  //   );
+
+  //   const mockUser = {
+  //     id: 3,
+  //     email: 'fialn@gmail.com',
+  //     name: 'filan',
+  //   };
+
+  //   mockOrganizationService.findUser.mockResolvedValue(mockUser);
+
+  // });
+
+  it('should remove an employee from an organization ', async () => {
+    const mockOrganization = {
+      id: 11,
+      name: 'integration test case 4',
+      employees: [
+        {
+          name: 'filan',
+          email: 'fialn@gmail.com',
+        },
+      ],
+    };
+    mockOrganizationService.deleteUserFromOrganization.mockResolvedValue(
+      mockOrganization,
+    );
+    const orgId = 11;
+    const userId = 3;
+
+    const result = await service.deleteUserFromOrganization(orgId, userId);
+
+    expect(
+      mockOrganizationService.deleteUserFromOrganization,
+    ).toHaveBeenCalled();
+
+    expect(result).toEqual(mockOrganization);
+  });
+
+  it('should add a logo to an organization and return that organization', async () => {});
 });
