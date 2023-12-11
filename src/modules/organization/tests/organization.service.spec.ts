@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationService } from '../organization.service';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
+import { Readable } from 'stream';
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -18,10 +19,6 @@ describe('OrganizationService', () => {
     remove: jest.fn(),
 
     getEmployeeFromOrganization: jest.fn(),
-
-    addEmployeeToOrganization: jest.fn(),
-
-    findUser: jest.fn(),
 
     deleteUserFromOrganization: jest.fn(),
 
@@ -142,27 +139,6 @@ describe('OrganizationService', () => {
     expect(result).toEqual(mockOrganization);
   });
 
-  // it('should add employee to the organization', async () => {
-  //   const mockOrganization = {
-  //     id: 13,
-  //     name: 'integration test case 6',
-  //     employees: [],
-  //   };
-
-  //   mockOrganizationService.addEmployeeToOrganization.mockResolvedValue(
-  //     mockOrganization,
-  //   );
-
-  //   const mockUser = {
-  //     id: 3,
-  //     email: 'fialn@gmail.com',
-  //     name: 'filan',
-  //   };
-
-  //   mockOrganizationService.findUser.mockResolvedValue(mockUser);
-
-  // });
-
   it('should remove an employee from an organization ', async () => {
     const mockOrganization = {
       id: 11,
@@ -189,5 +165,34 @@ describe('OrganizationService', () => {
     expect(result).toEqual(mockOrganization);
   });
 
-  it('should add a logo to an organization and return that organization', async () => {});
+  it('should add a logo to an organization and return that organization', async () => {
+    const orgId = 15;
+
+    const file: Express.Multer.File = {
+      fieldname: 'logo',
+      originalname: 'logo.png',
+      filename: 'logo.png',
+      encoding: '',
+      mimetype: '',
+      size: 0,
+      stream: new Readable(),
+      destination: '',
+      path: '',
+      buffer: undefined,
+    };
+
+    const mockOrganization = {
+      id: 15,
+      name: 'integration test case 7',
+      logo: null,
+    };
+
+    mockOrganizationService.addLogoToOrganization.mockResolvedValue(
+      mockOrganization,
+    );
+
+    const result = await service.addLogoToOrganization(orgId, file);
+    expect(mockOrganizationService.addLogoToOrganization).toHaveBeenCalled();
+    expect(result).toEqual(mockOrganization);
+  });
 });
