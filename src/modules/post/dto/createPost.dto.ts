@@ -4,11 +4,11 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreatePostDto {
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ type: 'string' })
+  @ApiProperty({ type: String })
   title: string;
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ type: 'string' })
+  @ApiPropertyOptional({ type: String })
   content?: string;
 }

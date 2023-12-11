@@ -6,6 +6,6 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 export class UpdateOrganizationDto extends PartialType(CreateOrganizationDto) {
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional({ type: 'string' })
+  @ApiPropertyOptional({ type: String })
   name: string;
 }

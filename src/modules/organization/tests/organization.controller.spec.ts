@@ -25,7 +25,7 @@ describe('OrganizationController', () => {
 
   it('Should create a new Organization', async () => {
     const createOrg: CreateOrganizationDto = {
-      name: 'integration test case 9',
+      name: 'integration test case 19',
     };
 
     const result = await controller.create(createOrg);
@@ -52,17 +52,26 @@ describe('OrganizationController', () => {
 
   it('should return a specific organization when providing a name', async () => {
     const orgName = 'drin';
+    const organizationTest = {
+      name: 'drin',
+      employees: [
+        { name: 'filan' },
+        { name: 'Create 1 user' },
+        { name: 'update 10' },
+        { name: 'user update 6' },
+      ],
+    };
 
-    const result = (await controller.findAll(orgName)) as OrganizationDto;
+    const result = await controller.findAll(orgName);
 
     expect(result).toBeDefined();
-    expect(result.name).toBe(orgName);
+    expect(result).toEqual(organizationTest);
   });
 
   it('Should find one organization based on the Id', async () => {
     const testOrg = await prismaService.organization.create({
       data: {
-        name: 'Test Org 3',
+        name: 'Test Org 5',
       },
     });
 

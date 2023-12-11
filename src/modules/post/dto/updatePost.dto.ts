@@ -4,16 +4,16 @@ import { IsBoolean, IsOptional, IsString } from 'class-validator';
 export class UpdatePostDto {
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ type: 'string' })
+  @ApiPropertyOptional({ type: String })
   readonly title?: string;
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ type: 'string' })
+  @ApiPropertyOptional({ type: String })
   content?: string;
 
   @IsOptional()
   @IsBoolean()
-  @ApiPropertyOptional({ type: 'boolean' })
+  @ApiPropertyOptional({ type: Boolean })
   publish?: boolean;
 }

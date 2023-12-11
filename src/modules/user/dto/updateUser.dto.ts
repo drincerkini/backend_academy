@@ -5,17 +5,17 @@ import { Roles } from 'src/enums/roles.enum';
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ type: 'string' })
+  @ApiPropertyOptional({ type: String })
   name?: string;
 
   @IsOptional()
   @IsEmail()
-  @ApiPropertyOptional({ type: 'string' })
+  @ApiPropertyOptional({ type: String })
   email?: string;
 
   @IsOptional()
   @IsString()
   @IsEnum(Roles)
-  @ApiPropertyOptional({ type: 'string', enum: Roles, default: Roles.Member })
+  @ApiPropertyOptional({ enum: Roles, default: Roles.Member })
   role?: string;
 }

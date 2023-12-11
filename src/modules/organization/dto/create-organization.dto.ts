@@ -4,6 +4,6 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateOrganizationDto {
   @IsString()
   @IsNotEmpty({ message: 'Name cannot be empty!' })
-  @ApiProperty({ type: 'string' })
+  @ApiProperty({ type: String })
   name: string;
 }
