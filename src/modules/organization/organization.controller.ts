@@ -19,7 +19,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { AddEmployeeToOrgDto } from './dto/addEmployeeToOrg.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Organizations')
 @Controller('organization')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
@@ -71,7 +73,7 @@ export class OrganizationController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-    @Body('userId')
+    @Body()
     userData: AddEmployeeToOrgDto,
   ) {
     return this.organizationService.addEmployeeToOrganization(id, userData);

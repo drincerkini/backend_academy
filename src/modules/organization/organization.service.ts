@@ -119,9 +119,6 @@ export class OrganizationService {
 
   // -------------------------------------------------------------------------
 
-  // test to add duplicate users to organization
-  //read abput connect and disconnect
-
   async getEmployeeFromOrganization(id: number) {
     const list = await this.prismaService.organization.findUnique({
       where: { id },

@@ -24,7 +24,7 @@ export class UserService {
   async getUserById(id: number) {
     return await this.prismaService.user.findUnique({
       where: {
-        id: id,
+        id,
       },
       include: {
         posts: true,
